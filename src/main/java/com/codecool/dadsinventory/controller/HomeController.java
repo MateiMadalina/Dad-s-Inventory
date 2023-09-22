@@ -2,9 +2,12 @@ package com.codecool.dadsinventory.controller;
 
 import com.codecool.dadsinventory.model.Item;
 import com.codecool.dadsinventory.service.ItemService;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,12 +29,20 @@ public class HomeController {
 
     @GetMapping
     public String index(Model model, @RequestParam(name="searchTerm", required = false, defaultValue = "") String searchTerm){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String title = "Dad's Inventory";
         model.addAttribute("title", title);
         log.info("Searchterm is: " + searchTerm);
         List<Item> items = itemService.getAllBySearchTerm(searchTerm);
         model.addAttribute("title", title);
         model.addAttribute("items", items);
+        if(authentication.getName().equals("anonymousUser")){
+            model.addAttribute("link","/login");
+            model.addAttribute("name","LogIn");
+        }else{
+            model.addAttribute("link","/");
+            model.addAttribute("name",authentication.getName());
+        }
         return "index";
     }
 
