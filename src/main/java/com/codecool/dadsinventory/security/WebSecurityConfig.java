@@ -34,6 +34,7 @@ public class WebSecurityConfig {
                         .requestMatchers("/home/privacy").hasRole("MOM")
                         .anyRequest().authenticated()
                 )
+                .oauth2Login(form->form.defaultSuccessUrl("/"))
                 .formLogin(form->form.defaultSuccessUrl("/"));
 
         return http.build();
